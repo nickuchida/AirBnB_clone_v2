@@ -27,7 +27,8 @@ class FileStorage:
         """
         if cls is None:
             return self.__objects
-        return {k:v for k, v in self.__objects.items() if isinstance(v, cls)}
+        return {k: v for k, v in self.__objects.items() if isinstance(v, cls)}
+
     def new(self, obj):
         """sets __object to given obj
         Args:
@@ -55,4 +56,14 @@ class FileStorage:
                     value = eval(value["__class__"])(**value)
                     self.__objects[key] = value
         except FileNotFoundError:
+            pass
+
+    def delete(self, obj=None):
+        """ Deletes an object from storage"""
+        if obj is None:
+            return
+
+        try:
+            del self.__objects["{}.{}".format(type(obj).__name__, obj.id)]
+        except KeyError:
             pass
