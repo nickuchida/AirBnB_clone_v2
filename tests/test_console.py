@@ -9,6 +9,7 @@ import json
 import console
 import tests
 from console import HBNBCommand
+import models
 from models.base_model import BaseModel
 from models.user import User
 from models.state import State
@@ -32,12 +33,19 @@ class TestConsole(unittest.TestCase):
         """at the end of the test this will tear it down"""
         del cls.consol
 
+    def setUp(self):
+        """Resets the file storage class for each test"""
+        FileStorage._FileStorage__objects = {}
+        TestConsole.original_path = FileStorage._FileStorage__file_path
+        FileStorage._FileStorage__file_path = "test.json"
+
     def tearDown(self):
-        """Remove temporary file (file.json) created as a result"""
+        """Removes test json file"""
         try:
-            os.remove("file.json")
-        except Exception:
+            os.remove("test.json")
+        except:
             pass
+        FileStorage._FileStorage__file_path = TestConsole.original_path
 
     def test_pep8_console(self):
         """Pep8 console.py"""
@@ -88,6 +96,47 @@ class TestConsole(unittest.TestCase):
             self.consol.onecmd("all User")
             self.assertEqual(
                 "[[User]", f.getvalue()[:7])
+
+    def test_create_args_str(self):
+        """Tests the new create command"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create User email=\"user@example.com\"")
+            uid = "User." + f.getvalue().rstrip()
+            self.assertIn("email", models.storage.all()[uid].to_dict().keys())
+            self.assertIsInstance(models.storage.all()[uid].email, str)
+            self.assertEqual("user@example.com",
+                             models.storage.all()[uid].email)
+
+    def test_create_args_int(self):
+        """Tests the new create command with an int"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create User age=47")
+            uid = "User.{}".format(f.getvalue().rstrip())
+            self.assertIn("age", models.storage.all()[uid].to_dict().keys())
+            self.assertIsInstance(models.storage.all()[uid].age, int)
+            self.assertEqual(47, models.storage.all()[uid].age)
+
+    def test_create_args_float(self):
+        """Tests the new create command with an int"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create User fingers=9.5")
+            uid = "User.{}".format(f.getvalue().rstrip())
+            self.assertIn("fingers", models.storage.all()[uid].to_dict().keys())
+            self.assertIsInstance(models.storage.all()[uid].fingers, float)
+            self.assertEqual(9.5, models.storage.all()[uid].fingers)
+
+    def test_create_args_multiple(self):
+        """Tests the new create command with an int"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create User email=\"user@example.com\" age=47 fingers=9.5")
+            uid = "User.{}".format(f.getvalue().rstrip())
+            self.assertIsInstance(models.storage.all()[uid].email, str)
+            self.assertEqual("user@example.com",
+                             models.storage.all()[uid].email)
+            self.assertIsInstance(models.storage.all()[uid].age, int)
+            self.assertEqual(47, models.storage.all()[uid].age)
+            self.assertIsInstance(models.storage.all()[uid].fingers, float)
+            self.assertEqual(9.5, models.storage.all()[uid].fingers)
 
     def test_show(self):
         """Test show command inpout"""
@@ -154,10 +203,11 @@ class TestConsole(unittest.TestCase):
             self.consol.onecmd("update User 12345")
             self.assertEqual(
                 "** no instance found **\n", f.getvalue())
+
         with patch('sys.stdout', new=StringIO()) as f:
-            self.consol.onecmd("all User")
-            obj = f.getvalue()
-        my_id = obj[obj.find('(')+1:obj.find(')')]
+            self.consol.onecmd("create User")
+            my_id = f.getvalue().rstrip()
+
         with patch('sys.stdout', new=StringIO()) as f:
             self.consol.onecmd("update User " + my_id)
             self.assertEqual(
@@ -198,7 +248,7 @@ class TestConsole(unittest.TestCase):
             self.assertEqual(
                 "** no instance found **\n", f.getvalue())
 
-    def test_destroy(self):
+    def test_destroy_func(self):
         """Test alternate destroy command inpout"""
         with patch('sys.stdout', new=StringIO()) as f:
             self.consol.onecmd("Galaxy.destroy()")
@@ -209,7 +259,7 @@ class TestConsole(unittest.TestCase):
             self.assertEqual(
                 "** no instance found **\n", f.getvalue())
 
-    def test_update(self):
+    def test_update_func(self):
         """Test alternate destroy command inpout"""
         with patch('sys.stdout', new=StringIO()) as f:
             self.consol.onecmd("sldkfjsl.update()")
@@ -219,10 +269,11 @@ class TestConsole(unittest.TestCase):
             self.consol.onecmd("User.update(12345)")
             self.assertEqual(
                 "** no instance found **\n", f.getvalue())
+
         with patch('sys.stdout', new=StringIO()) as f:
-            self.consol.onecmd("all User")
-            obj = f.getvalue()
-        my_id = obj[obj.find('(')+1:obj.find(')')]
+            self.consol.onecmd("create User")
+            my_id = f.getvalue().rstrip()
+
         with patch('sys.stdout', new=StringIO()) as f:
             self.consol.onecmd("User.update(" + my_id + ")")
             self.assertEqual(
