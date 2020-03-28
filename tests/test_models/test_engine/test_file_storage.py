@@ -61,11 +61,11 @@ class TestFileStorage(unittest.TestCase):
         storage.new(user)
         state = State()
         state.name = "Pennsylvania"
-        for item in storage.all(User):
-            self.assertIsInstance(item, User)
+        for k, v in storage.all(User).items():
+            self.assertIsInstance(v, User)
 
-        for item in storage.all(State):
-            self.assertIsInstance(item, State)
+        for k, v in storage.all(State).items():
+            self.assertIsInstance(v, State)
 
     def test_new(self):
         """test when new is created"""
