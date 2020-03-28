@@ -56,7 +56,7 @@ class TestFileStorage(unittest.TestCase):
         """Tests the all method with filtering"""
         storage = FileStorage()
         user = User()
-        user.id = 07102001
+        user.id = 7102001
         user.name = "Fubar"
         storage.new(user)
         state = State()
