@@ -11,6 +11,7 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 from shlex import split
+import re
 
 
 class HBNBCommand(cmd.Cmd):
@@ -47,10 +48,14 @@ class HBNBCommand(cmd.Cmd):
                 dic_obj = parameter.split("=")
                 key = dic_obj[0]
                 value = dic_obj[1]
-                if type(value) == (str, int, float):
-                    value = value.replace('_', ' ')
-                    value = value.replace('"', '')
+                value = value.replace('_', ' ')
+                if (re.fullmatch(r"\".*\"", value)):
+                    value = value[1:-1]
                     setattr(obj, key, value)
+                elif (re.fullmatch(r"[+-]*\d+", value)):
+                    setattr(obj, key, int(value))
+                elif (re.fullmatch(r"[+-]()\d+.\d*", value)):
+                    setattr(obj, key, float(value))
             obj.save()
             print("{}".format(obj.id))
         except SyntaxError:
