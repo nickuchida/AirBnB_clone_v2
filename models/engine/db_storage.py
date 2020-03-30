@@ -2,8 +2,8 @@
 '''sql db'''
 from os import getenv
 from sqlalchemy import create_engine
-from sqlalchemy import sessionmaker
-from sqlalchemy import scoped_session
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import scoped_session
 from models.user import User
 from models.state import State
 from models.city import City
@@ -28,13 +28,18 @@ class DBStorage:
                                       format(usr, pswd, host, db,
                                              pool_pre_ping=True))
         if getenv('HBNB_MYSQL_ENV') == 'test':
-            drop_all(self.__engine)
+            Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         '''show all objects'''
         if cls:
-            query = self.__session.query(cls).all()
+            q = self.__session.query(cls).all()
         else:
+            q = []
+            addclass = [State, City, User, Place, Review, Amenity]
+        for cl in addclass:
+            q.append(self.__session.query(cl).all()
+        return q
 
     def new(self, obj):
         '''add object to current database session'''
@@ -50,6 +55,8 @@ class DBStorage:
             return self.__session.delete(obj)
 
     reload(self):
+        '''reload to current db session'''
         Base.metadata.create_all(self.__engine)
         self.__session = sessionmaker(bind=self.__engine,
                                       expire_on_commit=False)
+        self.__session = scoped_session(self.__session)
