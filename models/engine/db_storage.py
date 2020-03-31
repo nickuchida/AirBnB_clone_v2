@@ -33,13 +33,11 @@ class DBStorage:
     def all(self, cls=None):
         '''show all objects'''
         if cls:
-            q = self.__session.query(cls).all()
+            ret = self.__session.query(cls).all()
         else:
-            q = []
-            addclass = [State, City, User, Place, Review, Amenity]
-        for cl in addclass:
-            q.append(self.__session.query(cl).all()
-        return q
+            ret = self.__session.query(State, City, User, Place, Review,
+                                       Amenity).all()
+        return {"{}.{}".format(type(item).__name__, item.id) for item in ret}
 
     def new(self, obj):
         '''add object to current database session'''
@@ -52,9 +50,9 @@ class DBStorage:
     def delete(self, obj=None):
         '''delete object from current database session'''
         if obj:
-            return self.__session.delete(obj)
+            self.__session.delete(obj)
 
-    reload(self):
+    def reload(self):
         '''reload to current db session'''
         Base.metadata.create_all(self.__engine)
         self.__session = sessionmaker(bind=self.__engine,
