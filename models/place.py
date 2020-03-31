@@ -34,3 +34,26 @@ class Place(BaseModel, Base):
     amenity_ids = []
 
     reviews = relationship("Review", backref="place", cascade="all,delete")
+    amenities = relationship("Amenity", secondary="place_amenity",
+                             viewonly=False)
+
+    @property
+    def amenities(self):
+        amenitylist = []
+        for am in models.storage.all(Amenity):
+            if am.place_id == self.amenity_ids:
+                amenitylist.append(am)
+        return amenitylist
+
+    @amenities.setter
+    def amenities(self, obj):
+        if type(obj) is Amenity:
+            self.amenity_ids.append(obj.id)
+
+    @property
+    def reviews(self):
+        reviewlist = []
+        for rev in models.storage.all(Review):
+            if rev.place_id == self.id:
+                reviewlist.append(rev)
+        return reviewlist
