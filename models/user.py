@@ -4,6 +4,7 @@ from models.base_model import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
+
 class User(BaseModel):
     """This is the class for user
     Attributes:

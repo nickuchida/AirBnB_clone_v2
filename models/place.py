@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 """This is the place class"""
-from models.base_model import BaseModel
-from sqlalchemy import Table, Column, Integer, ForeignKey, Float
+from models.base_model import BaseModel, Base
+from sqlalchemy import Table, Column, Integer, ForeignKey, Float, String
+from sqlalchemy.orm import relationship
 
-class Place(BaseModel):
+
+class Place(BaseModel, Base):
     """This is the class for Place
     Attributes:
         city_id: city id
