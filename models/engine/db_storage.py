@@ -19,7 +19,7 @@ class DBStorage:
     # TODO:
     # TODO: VERY IMPORTANT ADD ALL CLASSES BACK
     # TODO:
-    all_classes = (User, State, City, Place, Review)
+    all_classes = (User, State, City, Place, Review, Amenity)
 
     def __init__(self):
         '''initialize db engine'''
