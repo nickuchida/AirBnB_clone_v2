@@ -5,6 +5,13 @@ from sqlalchemy import Table, Column, Integer, ForeignKey, Float, String
 from sqlalchemy.orm import relationship
 
 
+place_amenity = Table('place_amenity', Base.metadata,
+                      Column('place_id', String(60), ForeignKey("places.id"),
+                             nullable=False, primary_key=True),
+                      Column('amenitiy_id', String(60),
+                             ForeignKey("amenities.id"), nullable=False,
+                             primary_key=True))
+
 class Place(BaseModel, Base):
     """This is the class for Place
     Attributes:
