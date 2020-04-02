@@ -60,7 +60,7 @@ class Place(BaseModel, Base):
 
         @amenities.setter
         def amenities(self, obj):
-            if obj and type(obj).__name__ == "Amenity":
+            if obj and type(obj) == "Amenity":
                 self.amenity_ids.append(obj.id)
 
         @property
