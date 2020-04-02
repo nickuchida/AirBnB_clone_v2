@@ -53,7 +53,7 @@ class Place(BaseModel, Base):
         @property
         def amenities(self):
             amenitylist = []
-            for am in self.reviews:
+            for am in models.storage.all(Amenity):
                 if am.place_id == self.amenity_ids:
                     amenitylist.append(am)
             return amenitylist
