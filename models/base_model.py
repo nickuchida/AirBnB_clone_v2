@@ -40,6 +40,8 @@ class BaseModel:
                 self.created_at = curtime
             if "updated_at" not in kwargs:
                 self.updated_at = curtime
+            if not self.id:
+                self.id = str(uuid.uuid4())
         else:
             self.id = str(uuid.uuid4())
             self.created_at = self.updated_at = datetime.now()
