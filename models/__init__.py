@@ -4,6 +4,7 @@ import os
 from models.user import User
 from models.state import State
 from models.review import Review
+from models.city import City
 
 storage = None
 
