@@ -47,14 +47,13 @@ class HBNBCommand(cmd.Cmd):
                 raise NameError()
             obj = eval("{}()".format(my_list[0]))
             for parameter in my_list[1:]:
-                if "=" not in paramater:
+                if "=" not in parameter:
                     continue
                 dic_obj = parameter.split("=")
                 key = dic_obj[0]
                 value = dic_obj[1]
                 value = value.replace('_', ' ')
-                if (hasattr(obj, key)):
-                    setattr(obj, key, eval(value))
+                setattr(obj, key, eval(value))
             obj.save()
             print("{}".format(obj.id))
         except SyntaxError:
