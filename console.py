@@ -45,17 +45,14 @@ class HBNBCommand(cmd.Cmd):
             my_list = line.split(" ")
             obj = eval("{}()".format(my_list[0]))
             for parameter in my_list[1:]:
+                if "=" not in paramater:
+                    continue
                 dic_obj = parameter.split("=")
                 key = dic_obj[0]
                 value = dic_obj[1]
                 value = value.replace('_', ' ')
-                if (re.fullmatch(r"\".*\"", value)):
-                    value = value[1:-1]
-                    setattr(obj, key, value)
-                elif (re.fullmatch(r"[+-]*\d+", value)):
-                    setattr(obj, key, int(value))
-                elif (re.fullmatch(r"[+-]()\d+.\d*", value)):
-                    setattr(obj, key, float(value))
+                if (hasattr(obj, key)):
+                    setattr(obj, key, eval(value))
             obj.save()
             print("{}".format(obj.id))
         except SyntaxError:
