@@ -14,6 +14,7 @@ place_amenity = Table('place_amenity', Base.metadata,
                              ForeignKey("amenities.id"), nullable=False,
                              primary_key=True))
 
+
 class Place(BaseModel, Base):
     """This is the class for Place
     Attributes:
