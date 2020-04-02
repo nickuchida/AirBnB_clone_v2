@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 """This is the place class"""
+import os
 from models.base_model import BaseModel, Base
 from models.city import City
 from models.user import User
+from models.amenity import Amenity
 from sqlalchemy import Table, Column, Integer, ForeignKey, Float, String
 from sqlalchemy.orm import relationship
 
@@ -43,28 +45,29 @@ class Place(BaseModel, Base):
     longitude = Column(Float, nullable=True)
     amenity_ids = []
 
-    reviews = relationship("Review", backref="place",
-                           cascade="all,delete-orphan")
-    amenities = relationship("Amenity", secondary="place_amenity",
-                             viewonly=False)
+    if os.getenv("HBNB_TYPE_STORAGE") == "db":
+        amenities = relationship("Amenity", secondary="place_amenity",
+                                 viewonly=False)
+        reviews = relationship("Review", backref="place",
+                               cascade="all,delete-orphan")
+    else:
+        @property
+        def amenities(self):
+            amenitylist = []
+            for am in self.reviews:
+                if am.place_id == self.amenity_ids:
+                    amenitylist.append(am)
+            return amenitylist
 
-    @property
-    def amenities(self):
-        amenitylist = []
-        for am in models.storage.all(Amenity):
-            if am.place_id == self.amenity_ids:
-                amenitylist.append(am)
-        return amenitylist
+        @amenities.setter
+        def amenities(self, obj):
+            if type(obj) is Amenity:
+                self.amenity_ids.append(obj.id)
 
-    @amenities.setter
-    def amenities(self, obj):
-        if type(obj) is Amenity:
-            self.amenity_ids.append(obj.id)
-
-    @property
-    def reviews(self):
-        reviewlist = []
-        for rev in models.storage.all(Review):
-            if rev.place_id == self.id:
-                reviewlist.append(rev)
-        return reviewlist
+        @property
+        def reviews(self):
+            reviewlist = []
+            for rev in self.reviews:
+                if rev.place_id == self.id:
+                    reviewlist.append(rev)
+            return reviewlist
