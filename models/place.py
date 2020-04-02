@@ -4,7 +4,6 @@ import os
 from models.base_model import BaseModel, Base
 from models.city import City
 from models.user import User
-from models.amenity import Amenity
 from sqlalchemy import Table, Column, Integer, ForeignKey, Float, String
 from sqlalchemy.orm import relationship
 
@@ -61,7 +60,7 @@ class Place(BaseModel, Base):
 
         @amenities.setter
         def amenities(self, obj):
-            if type(obj) is Amenity:
+            if type(obj).__name__ == "Amenity":
                 self.amenity_ids.append(obj.id)
 
         @property
