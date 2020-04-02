@@ -19,7 +19,7 @@ class DBStorage:
     # TODO:
     # TODO: VERY IMPORTANT ADD ALL CLASSES BACK
     # TODO:
-    all_classes = (User, State, City, Place, Review) #, Amenity)
+    all_classes = (User, State, City, Place, Review, Amenity)
 
     def __init__(self):
         '''initialize db engine'''
@@ -33,7 +33,7 @@ class DBStorage:
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
                                       format(usr, pswd, host, db),
                                              pool_pre_ping=True)
-        if getenv('HBNB_MYSQL_ENV') == 'test':
+        if getenv('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
