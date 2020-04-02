@@ -43,6 +43,8 @@ class HBNBCommand(cmd.Cmd):
             if not line:
                 raise SyntaxError()
             my_list = line.split(" ")
+            if my_list[0] not in all_classes:
+                raise NameError()
             obj = eval("{}()".format(my_list[0]))
             for parameter in my_list[1:]:
                 if "=" not in paramater:
