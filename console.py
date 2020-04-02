@@ -18,8 +18,8 @@ class HBNBCommand(cmd.Cmd):
     """this class is entry point of the command interpreter
     """
     prompt = "(hbnb) "
-    all_classes = {"BaseModel", "User", "State", "City",
-                   "Amenity", "Place", "Review"}
+    all_classes = ("BaseModel", "User", "State", "City",
+                   "Amenity", "Place", "Review")
 
     def emptyline(self):
         """Ignores empty spaces"""
@@ -39,6 +39,8 @@ class HBNBCommand(cmd.Cmd):
             SyntaxError: when there is no args given
             NameError: when there is no object taht has the name
         """
+        all_classes = ("BaseModel", "User", "State", "City",
+                       "Amenity", "Place", "Review")
         try:
             if not line:
                 raise SyntaxError()
