@@ -49,8 +49,11 @@ class BaseModel:
         Return:
             returns a string of class name, id, and dictionary
         """
+        rdict = self.__dict__
+        if "_sa_instance_state" in rdict:
+            del rdict["_sa_instance_state"]
         return "[{}] ({}) {}".format(
-            type(self).__name__, self.id, self.to_dict())
+            type(self).__name__, self.id, rdict)
 
     def __repr__(self):
         """return a string representaion
