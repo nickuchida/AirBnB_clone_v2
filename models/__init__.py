@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """create a unique FileStorage instance for your application"""
 import os
+from models.user import User
+from models.state import State
 
 storage = None
 
