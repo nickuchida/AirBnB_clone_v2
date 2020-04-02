@@ -45,7 +45,7 @@ class Place(BaseModel, Base):
     amenity_ids = []
 
     if os.getenv("HBNB_TYPE_STORAGE") == "db":
-        amenities = relationship("Amenity", secondary="place_amenity",
+        amenities = relationship("Amenity", secondary=place_amenity,
                                  viewonly=False)
         reviews = relationship("Review", backref="place",
                                cascade="all,delete-orphan")
@@ -53,7 +53,7 @@ class Place(BaseModel, Base):
         @property
         def amenities(self):
             amenitylist = []
-            for am in models.storage.all(Amenity):
+            for am in models.storage.all(Amenity).values:
                 if am.place_id == self.id:
                     amenitylist.append(am)
             return amenitylist
