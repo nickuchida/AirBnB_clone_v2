@@ -49,7 +49,7 @@ class BaseModel:
         Return:
             returns a string of class name, id, and dictionary
         """
-        rdict = self.__dict__
+        rdict = self.__dict__.copy()
         if "_sa_instance_state" in rdict:
             del rdict["_sa_instance_state"]
         return "[{}] ({}) {}".format(
