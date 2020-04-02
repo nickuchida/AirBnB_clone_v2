@@ -124,7 +124,6 @@ class TestConsole(unittest.TestCase):
             self.assertEqual(
                 "[[User]", f.getvalue()[:7])
 
-
     def test_create_args_str(self):
         """Tests the new create command"""
         with patch('sys.stdout', new=StringIO()) as f:
