@@ -7,6 +7,8 @@ from models.base_model import BaseModel
 import pep8
 
 
+@unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db", "Using datebase\
+                 storage instead of filesystem")
 class TestReview(unittest.TestCase):
     """this will test the place class"""
 

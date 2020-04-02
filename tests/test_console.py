@@ -18,6 +18,7 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 from models.engine.file_storage import FileStorage
+from models.engine.db_storage import DBStorage, Base
 
 
 class TestConsole(unittest.TestCase):
@@ -38,6 +39,10 @@ class TestConsole(unittest.TestCase):
         FileStorage._FileStorage__objects = {}
         TestConsole.original_path = FileStorage._FileStorage__file_path
         FileStorage._FileStorage__file_path = "test.json"
+        if isinstance(models.storage, DBStorage):
+            models.storage._DBStorage__session.close()
+            Base.metadata.drop_all(models.storage._DBStorage__engine)
+            models.storage.reload()
 
     def tearDown(self):
         """Removes test json file"""
@@ -99,16 +104,41 @@ class TestConsole(unittest.TestCase):
             self.assertEqual(
                 "[[User]", f.getvalue()[:7])
 
+    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") != "db", "Using datebase\
+                     storage instead of filesystem")
+    def test_create_db(self):
+        """Test create command input"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create")
+            self.assertEqual(
+                "** class name missing **\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create asdfsfsd")
+            self.assertEqual(
+                "** class doesn't exist **\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("create User email=\"foo\" password=\"bar\"")
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.consol.onecmd("all User")
+            print(f.getvalue())
+            self.assertEqual(
+                "[[User]", f.getvalue()[:7])
+
     def test_create_args_str(self):
         """Tests the new create command"""
         with patch('sys.stdout', new=StringIO()) as f:
-            self.consol.onecmd("create User email=\"user@example.com\"")
+            self.consol.onecmd("create User email=\"user@example.com\" \
+                               password=\"Foo123\"")
             uid = "User." + f.getvalue().rstrip()
             self.assertIn("email", models.storage.all()[uid].to_dict().keys())
             self.assertIsInstance(models.storage.all()[uid].email, str)
             self.assertEqual("user@example.com",
                              models.storage.all()[uid].email)
+            self.assertEqual("Foo123",
+                             models.storage.all()[uid].password)
 
+    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db", "Using datebase\
+                     storage instead of filesystem")
     def test_create_args_int(self):
         """Tests the new create command with an int"""
         with patch('sys.stdout', new=StringIO()) as f:
@@ -118,18 +148,19 @@ class TestConsole(unittest.TestCase):
             self.assertIsInstance(models.storage.all()[uid].age, int)
             self.assertEqual(47, models.storage.all()[uid].age)
 
+    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db", "Using datebase\
+                     storage instead of filesystem")
     def test_create_args_multiple(self):
         """Tests the new create command with an int"""
         with patch('sys.stdout', new=StringIO()) as f:
-            self.consol.onecmd("create User email=\"user@example.com\" age=47 fingers=9.5")
+            self.consol.onecmd("create User email=\"user@example.com\" \
+                               age=47 fingers=9.5")
             uid = "User.{}".format(f.getvalue().rstrip())
             self.assertIsInstance(models.storage.all()[uid].email, str)
             self.assertEqual("user@example.com",
                              models.storage.all()[uid].email)
             self.assertIsInstance(models.storage.all()[uid].age, int)
             self.assertEqual(47, models.storage.all()[uid].age)
-            #self.assertIsInstance(models.storage.all()[uid].fingers, float)
-            #self.assertEqual(9.5, models.storage.all()[uid].fingers)
 
     def test_show(self):
         """Test show command inpout"""
@@ -198,7 +229,7 @@ class TestConsole(unittest.TestCase):
                 "** no instance found **\n", f.getvalue())
 
         with patch('sys.stdout', new=StringIO()) as f:
-            self.consol.onecmd("create User")
+            self.consol.onecmd("create User email=\"\" password=\"\"")
             my_id = f.getvalue().rstrip()
 
         with patch('sys.stdout', new=StringIO()) as f:
@@ -264,7 +295,7 @@ class TestConsole(unittest.TestCase):
                 "** no instance found **\n", f.getvalue())
 
         with patch('sys.stdout', new=StringIO()) as f:
-            self.consol.onecmd("create User")
+            self.consol.onecmd("create User email=\"\" password=\"\"")
             my_id = f.getvalue().rstrip()
 
         with patch('sys.stdout', new=StringIO()) as f:
