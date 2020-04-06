@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+"""This module pushes a package to all servers and deploys it"""
 import os
 from fabric.api import put, env, run
 
@@ -7,6 +9,7 @@ env.hosts = ["34.74.54.243", "54.88.109.235"]
 env.user = "ubuntu"
 
 def do_deploy(archive_path):
+    """Deploys package"""
     if archive_path is None or not os.path.isfile(archive_path):
         print("NOT PATH")
         return False

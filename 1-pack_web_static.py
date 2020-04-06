@@ -1,9 +1,12 @@
+#!/usr/bin/python3
+"""This module packages web_static files"""
 import datetime
 import os
 from fabric.api import local
 
 
 def do_pack():
+    """Packaging functions"""
     if not os.path.isdir("./versions"):
         os.makedirs("./versions")
     ntime = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
