@@ -55,3 +55,5 @@ def do_clean(number=0):
     """Cleans up old archives"""
     local("ls -d -1tr versions/* | head -n {} | \
           xargs -d '\n' rm -f --".format(1 if int(number) < 1 else number))
+    run("ls -d -1tr /data/web_static/releases/* | head -n {} | \
+          xargs -d '\n' rm -rf --".format(1 if int(number) < 1 else number))
