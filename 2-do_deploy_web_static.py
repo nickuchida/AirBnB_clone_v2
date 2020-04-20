@@ -6,7 +6,9 @@ folder
 from os.path import exists, isfile
 from datetime import datetime
 from fabric.api import local, env, put, run
-
+env.hosts = ['104.196.201.203', '54.175.122.113']
+env.user = 'ubuntu'
+env.key_filename = '~/.ssh/holberton'
 
 def do_pack():
     '''generate a tgz archive '''
